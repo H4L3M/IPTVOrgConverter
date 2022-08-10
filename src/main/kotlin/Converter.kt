@@ -29,48 +29,58 @@ object Converter {
     fun convert() {
 
         val list = mutableListOf<EliteChannel>()
+
         var eliteChannel = EliteChannel()
 
-        var streamUrl = ""
-        var status = ""
 
         for (country in arabCountries) {
             channels.forEachIndexed { id, channel ->
                 if (channel.country!!.contains(country)) {
 
+
+                    var streamUrl = ""
+                    var status = ""
+                    var category = ""
+
+                    if (!channel.categories.isNullOrEmpty()) {
+                        category = channel.categories[0].toString()
+                    }
+
+                    if (streamUrl.isEmpty()) {
+                        status = "offline"
+                    }
+
                     println(channel.name)
 
                     streams.forEachIndexed { _, stream ->
-                        if (stream.status.equals("online")) {
-                            if (stream.channel == channel.id) {
-                                println(stream.url)
-                                streamUrl = stream.url.toString()
-                                status = stream.status.toString()
-                            }
 
-                            eliteChannel = EliteChannel(
-                                id = id,
-                                name = Name(ar = "", en = channel.name),
-                                logo = channel.logo!!,
-                                code = Code(country = channel.country, category = "", `package` = ""),
-                                userAgent = stream.userAgent,
-                                stream = streamUrl,
-                                status = status
-                            )
+//                        if (stream.status.equals("online")) {
+                        if (stream.channel == channel.id) {
+                            println(stream.url)
+                            streamUrl = stream.url.toString()
+                            status = stream.status.toString()
                         }
+
+                        eliteChannel = EliteChannel(
+                            id = id,
+                            name = Name(ar = "", en = channel.name),
+                            logo = channel.logo!!,
+                            code = Code(country = channel.country, category = category, `package` = ""),
+                            userAgent = "",
+                            stream = streamUrl,
+                            status = status
+                        )
+//                        }
                     }
+
                     list.add(eliteChannel)
-                    eliteChannel = EliteChannel()
-                    streamUrl = ""
-                    status = ""
+
                 }
             }
             val str = pretty.toJson(list)
-            val stb = StringBuilder()
-            stb.append(str)
 
             try {
-                File(DESKTOP, "arb-pretty.json").writeText(text = stb.toString())
+                File(DESKTOP, "arb-pretty.json").writeText(text = buildString { append(str) })
                 print("file created")
             } catch (e: Exception) {
                 print("cause : ${e.cause}")
