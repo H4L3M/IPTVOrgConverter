@@ -1,21 +1,23 @@
+import backend.getData
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import model.*
-import network.getChannels
-import network.getStreams
 import java.io.File
 import java.lang.reflect.Type
 
 private const val DESKTOP = "/home/halem/Desktop"
 
+private const val CHANNELS = "https://iptv-org.github.io/api/channels.json"
+private const val STREAMS = "https://iptv-org.github.io/api/streams.json"
+
 val gson: Gson = Gson()
 val pretty: Gson = GsonBuilder().setPrettyPrinting().create()
 private val channelListType: Type? = object : TypeToken<List<GitChannel>?>() {}.type
-val channels: List<GitChannel> = gson.fromJson(getChannels(), channelListType)
+val channels: List<GitChannel> = gson.fromJson(getData(CHANNELS), channelListType)
 
 private val streamListType: Type? = object : TypeToken<List<GitStream>?>() {}.type
-val streams: List<GitStream> = gson.fromJson(getStreams(), streamListType)
+val streams: List<GitStream> = gson.fromJson(getData(STREAMS), streamListType)
 
 val arabCountries = listOf(
     "AE", "BH", "DJ", "DZ", "EG", "IQ", "JO", "KM", "KW", "LB", "LY", "MA", "MR", "OM", "PS", "QA",
@@ -74,6 +76,5 @@ object Converter {
                 print("cause : ${e.cause}")
             }
         }
-
     }
 }
